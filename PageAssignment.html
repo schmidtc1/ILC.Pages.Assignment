@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- CDN for DataTables css -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
     <title>Assignment</title>
 </head>
 <body>
     <div id="results"></div>
 </body>
+<!-- CDNs for jQuery and DataTables js -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+
 <script id="data" type="application/json">
 	[
 		{
@@ -488,5 +494,58 @@
 			"so_totaltax": 0.000000000
 		}
 	]    
+</script>
+
+<script type="text/javascript">
+	/* Once document is ready, perform the following steps:
+		Parse the data JSON provided in the HTML page
+		At runtime add the DataTables table element
+		Attach/bind/link the JSON data into DataTable
+		Render the DataTable
+	*/
+	$(document).ready(function() {
+		/* Parse JSON */
+		var res = JSON.parse(document.getElementById("data").textContent);
+
+		/* Create DataTables table element:
+			Must create a table element first
+			Add headers to the table
+				Need to get column names from the res variable
+		*/
+		var table = document.createElement("table");
+		var div = document.getElementById("results");
+		div.appendChild(table);
+
+		/* Stack overflow for creating HTML table element and converting to a DataTable at runtime: 
+		https://stackoverflow.com/questions/51435592/how-to-create-jquery-data-table-from-json-array-without-declaring-columns */
+
+		table.setAttribute("id", "display");
+		$("#display").DataTable({
+			data: res.map(function(obj) {
+				// Format tax rate as percent
+				obj.so_taxrate = new Intl.NumberFormat("en-US", {style: "percent", minimumFractionDigits: 2}).format(obj.so_taxrate);
+
+				// Format price and tax as currency
+				const currencyFormat = new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"});
+
+				obj.so_totalprice = currencyFormat.format(obj.so_totalprice);
+				obj.so_totaltax = currencyFormat.format(obj.so_totaltax);
+
+				// Format date as mm/dd/yyyy
+				const date = new Date(obj.so_datecreated);
+				const dateFormatted = new Intl.DateTimeFormat("en-US", {
+					year: "numeric",
+					month: "2-digit",
+					day: "2-digit"
+					}).format(date);
+				obj.so_datecreated = dateFormatted;
+				return obj;
+			}),
+			columns: Object.keys(res[0]).map(function(item) { 
+				return { data: item, title: item } // title is required to set the column header if you do not initialize thead/th elements
+			})
+		});
+
+	})
 </script>
 </html>
