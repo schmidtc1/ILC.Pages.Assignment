@@ -507,11 +507,7 @@
 		/* Parse JSON */
 		var res = JSON.parse(document.getElementById("data").textContent);
 
-		/* Create DataTables table element:
-			Must create a table element first
-			Add headers to the table
-				Need to get column names from the res variable
-		*/
+		/* Create DataTables table element and append to div */
 		var table = document.createElement("table");
 		var div = document.getElementById("results");
 		div.appendChild(table);
@@ -522,6 +518,7 @@
 		table.setAttribute("id", "display");
 		$("#display").DataTable({
 			data: res.map(function(obj) {
+				/* Intl object for formatting variables: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl */
 				// Format tax rate as percent
 				obj.so_taxrate = new Intl.NumberFormat("en-US", {style: "percent", minimumFractionDigits: 2}).format(obj.so_taxrate);
 
