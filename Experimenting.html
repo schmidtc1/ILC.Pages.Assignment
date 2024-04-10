@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- CDN for DataTables css -->
-	<link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+	<!-- <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" /> -->
+	<link href="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.0.3/af-2.7.0/b-3.0.1/b-html5-3.0.1/sl-2.0.0/datatables.min.css" rel="stylesheet"> 
     <title>Assignment</title>
 </head>
 <body>
@@ -12,7 +13,8 @@
 </body>
 <!-- CDNs for jQuery and DataTables js -->
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+<!-- <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script> -->
+<script src="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.0.3/af-2.7.0/b-3.0.1/b-html5-3.0.1/sl-2.0.0/datatables.min.js"></script>
 
 <script id="data" type="application/json">
 	[
@@ -540,7 +542,28 @@
 			}),
 			columns: Object.keys(res[0]).map(function(item) { 
 				return { data: item, title: item } // title is required to set the column header if you do not initialize thead/th elements
-			})
+			}),
+			createdRow: function ( row, data, index ) { // data is the Objects listed in the JSON array, access using .so_num, etc
+				if (data.so_num === "1001") {
+					$('td', row).eq(0).css('color','red');
+					// $('td', row).css('color', 'red'); -> exclude eq(#) to highlight entire row.
+				}
+			},
+			layout: {
+				topStart: {
+					buttons: [
+						{
+							extend: 'excelHtml5',
+							text: 'Save as xls'
+						}
+					]
+				}
+			},
+			select: {
+				style: 'os',
+				items: 'cell'
+			},
+			autoFill: true
 		});
 
 
